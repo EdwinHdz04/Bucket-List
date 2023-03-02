@@ -2,45 +2,102 @@ import React, { useState } from 'react';
 import BucketForm from './BucketForm';
 
 function Bucket(props) {
+  // Initialize state for the item being edited
   const [edit, setEdit] = useState({
     id: null,
     value: '',
     eagerness: '',
   });
 
-  console.log(props.bucket);
-
-  const submitUpdate = (value) => {
-
-    // TODO: Write logic to update the `edit` value in state after a user updates an entry in the list
-
-    // TODO: Set the key:value pairs in the `edit` object back to empty strings
-
+  // Toggle the completed state of an item when it is clicked
+  const completeBucketItem = (id) => {
+    const updatedBucket = props.bucket.map((item) => {
+      if (item.id === id) {
+        item.completed = !item.completed;
+      }
+      return item;
+    });
+    props.setBucket(updatedBucket);
   };
 
-  // If the user is attempting to edit an item, render the bucket form with the edit variable passed as a prop
-  if (edit.id) {
-    return <BucketForm edit={edit} onSubmit={submitUpdate} />;
-  }
+  // Remove an item from the list when the delete icon is clicked
+  const removeBucketItem = (id) => {
+    const updatedBucket = props.bucket.filter((item) => item.id !== id);
+    props.setBucket(updatedBucket);
+  };
 
-  return props.bucket.map((item, index) => (
-    // TODO: Add a className of `bucket row complete ${item.eagerness}` for completed items, and `bucket-row ${item.eagerness}` for non-completed items
-    // TODO: Add a key attribute set to the value of the index position
-    // Hint: use a ternary operator
-    <div className={ } key={}>
+  // Update an item in the list when the edit form is submitted
+  const submitUpdate = (value) => {
+    const updatedBucket = props.bucket.map((item) => {
+      if (item.id === edit.id) {
+        item.value = value.value;
+        item.eagerness = value.eagerness;
+      }
+      return item;
+    });
+    props.setBucket(updatedBucket);
 
-      // TODO: Add an onClick event that invokes the `completeBucketItem` method passing the item id as a argument
-      <div key={} onClick={}>
-          {/* TODO: Add the item text here */}
-      </div>
-      <div className="icons">
-        // TODO: Add an onClick event update the `edit` object with the `id`, `value`, and `eagerness` properties
-        <p onClick={}> ✏️</p>
-        {/* TODO: Add an onClick event that will invoke the removeBucketItem method passing in the `item.id` */}
-        <p onClick={}> 🗑️</p>
-      </div>
-    </div>
-  ));
+    // Clear the edit state after the item is updated
+    setEdit({
+      id: null,
+      value: '',
+      eagerness: '',
+    });
+  };
+
+  return (
+    <>
+      {edit.id && <BucketForm edit={edit} onSubmit={submitUpdate} />}
+      {props.bucket.map((item, index) => (
+        <div
+          className={`bucket-row ${item.eagerness} ${item.completed ? 'complete' : ''}`}
+          key={index}
+        >
+          {/* Clicking on the item toggles its completed state */}
+          <div key={item.id} onClick={() => completeBucketItem(item.id)}>
+            {item.value}
+          </div>
+          <div className="icons">
+            {/* Clicking on the edit icon sets the edit state */}
+            <p
+              onClick={() =>
+                setEdit({
+                  id: item.id,
+                  value: item.value,
+                  eagerness: item.eagerness,
+                })
+              }
+            >
+              {' '}
+              ✏️
+            </p>
+            {/* Clicking on the delete icon removes the item from the list */}
+            <p onClick={() => removeBucketItem(item.id)}> 🗑️</p>
+          </div>
+        </div>
+      ))}
+    </>
+  );
 }
 
 export default Bucket;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
